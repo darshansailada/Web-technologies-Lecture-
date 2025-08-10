@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Results</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: url('img/new-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .overlay {
+            background: rgba(255, 255, 255, 0.85);
+            min-height: 100vh;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2, h3 {
+            color: #444;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Student Details Card */
+        .student-box {
+            flex: 1 1 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .student-box h3 {
+            text-align: center;
+            color: #ff7e5f;
+            margin-bottom: 15px;
+        }
+
+        .student-box p {
+            font-size: 16px;
+            margin: 8px 0;
+        }
+
+        /* Results Table Card */
+        .table-section {
+            flex: 2 1 500px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #ff7e5f;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fdf3f0;
+        }
+
+        /* Buttons */
+        .btn-group {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #feb47b, #ff7e5f);
+        }
+    </style>
+
+    <script>
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const roll = params.get("roll");
+            const name = params.get("name");
+            const branch = params.get("branch");
+            const year = params.get("year");
+            const score = params.get("score");
+
+            if (roll && name) {
+                document.getElementById("studentDetails").innerHTML = `
+                    <div class="student-box">
+                        <h3>Your Test Result</h3>
+                        <p><b>Name:</b> ${name}</p>
+                        <p><b>Roll No:</b> ${roll}</p>
+                        <p><b>Branch:</b> ${branch}</p>
+                        <p><b>Year:</b> ${year}</p>
+                        <p><b>Score:</b> ${score} / 5</p>
+                    </div>
+                `;
+            } else {
+                document.getElementById("studentDetails").innerHTML = `
+                    <div class="student-box">
+                        <p style="color: gray;">No specific student details found. Please take the test to see your result here.</p>
+                    </div>
+                `;
+            }
+
+            let results = JSON.parse(localStorage.getItem('allResults')) || [];
+            let tableBody = document.getElementById("resultsTableBody");
+            results.forEach(r => {
+                let row = `<tr>
+                    <td>${r.name}</td>
+                    <td>${r.roll}</td>
+                    <td>${r.branch}</td>
+                    <td>${r.year}</td>
+                    <td>${r.score}/5</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="overlay">
+        <div class="content-wrapper">
+            <div id="studentDetails"></div>
+
+            <div class="table-section">
+                <h2>All Test Results</h2>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Roll No</th>
+                        <th>Branch</th>
+                        <th>Year</th>
+                        <th>Score</th>
+                    </tr>
+                    <tbody id="resultsTableBody"></tbody>
+                </table>
+                <div class="btn-group">
+                    <button onclick="localStorage.removeItem('allResults'); location.reload();">Clear All Results</button>
+                    <button onclick="window.location.href='index.html'">Back to Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Development Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('https://images.unsplash.com/photo-1596495577886-d920f1fb7238?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px 25px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .question-box {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .question-box p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        .submit-box {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+        }
+
+        /* Scrollbar styling */
+        .container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+    </style>
+
+    <script>
+        const questionPool = [
+            {q: "What does HTML stand for?", options: ["Hyper Trainer Marking Language", "Hyper Text Markup Language", "Hyper Text Marketing Language"], answer: 1},
+            {q: "Which property changes the text color in CSS?", options: ["color", "font-color", "text-color"], answer: 0},
+            {q: "In CSS, which symbol is used for ID selectors?", options: ["#", ".", "*"], answer: 0},
+            {q: "What does CSS stand for?", options: ["Creative Style Sheets", "Cascading Style Sheets", "Computer Style Sheets"], answer: 1},
+            {q: "Which CSS property controls text size?", options: ["font-size", "text-size", "size"], answer: 0},
+        ];
+
+        let selectedQuestions = [];
+
+        function loadQuestions() {
+            selectedQuestions = questionPool.sort(() => Math.random() - 0.5).slice(0, 5);
+            const container = document.getElementById("quiz");
+            container.innerHTML = "";
+            selectedQuestions.forEach((item, index) => {
+                let qHTML = `<div class='question-box'>
+                                <p>${index + 1}. ${item.q}</p>`;
+                item.options.forEach((opt, i) => {
+                    qHTML += `<label><input type='radio' name='q${index}' value='${i}'> ${opt}</label>`;
+                });
+                qHTML += `</div>`;
+                container.innerHTML += qHTML;
+            });
+        }
+
+        function submitTest() {
+            const params = new URLSearchParams(window.location.search);
+            let roll = params.get("roll");
+            let name = params.get("name");
+            let branch = params.get("branch");
+            let year = params.get("year");
+
+            let score = 0;
+            selectedQuestions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected && parseInt(selected.value) === q.answer) {
+                    score++;
+                }
+            });
+
+            let results = JSON.parse(localStorage.getItem('allResults')) || [];
+            results.push({ roll, name, branch, year, score });
+            localStorage.setItem('allResults', JSON.stringify(results));
+
+            window.location.href = `results.html?roll=${roll}&name=${name}&branch=${branch}&year=${year}&score=${score}`;
+        }
+
+        window.onload = loadQuestions;
+    </script>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <h1>Web Development Test</h1>
+        <div id="quiz"></div>
+        <div class="submit-box">
+            <button type="button" onclick="submitTest()">Submit Test</button>
+            <button type="button" onclick="window.location.href='index.html'">Back to Home</button>
+        </div>
+    </div>
+</body>
+</html>
